@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+
+
+<div class="col-12 d-flex justify-content-between">
+
+    <div class="col-3">
+        {% include 'online_cinema/components/_category.html' %}
+
+    </div>
+
+    <div class="col-8">
+
+        <div class="cinema_info d-flex auth_modal p-4 rounded">
+
+            <div class="cinema_photo">
+                <img src="{{ cinema.photo.url }}" alt="" width="250" height="400">
+            </div>
+
+            <div class="info mx-4 text-light">
+                <h4>{{ cinema.title }}</h4>
+
+                <div class="about d-flex flex-column mt-4">
+                    <p>Год выпуска: {{ cinema.year }}</p>
+                    <p>Страна: {{ cinema.country }}</p>
+                    <p>Премьера: {{ cinema.released }}</p>
+                    <p>Жанры: {% for cat in cinema.category.all %}
+                        <a href="{{ cat.get_absolute_url }}" class="navbar-brand">{{ cat.title }}</a> /
+                        {% endfor %}
+                    </p>
+                    <p>Количество просмотров: {{ cinema.views }}</p>
+                    <p>Количество комментариев: 0</p>
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <div class="list_actors  p-2 text-light auth_modal rounded mt-3">
+            <h4 class="mb-4 mx-3">Актёры: </h4>
+            <div class="actors d-flex">
+
+                {% for actor in cinema.actors.all %}
+                <div class="actor_info mx-3" style="width: 100px">
+                    <div class="actor_photo">
+                        <img src="{{ actor.avatar.url }}" alt="" width="100" height="120">
+                    </div>
+
+                    <h6>{{ actor.full_name }}</h6>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+        <div class="description  auth_modal p-4 text-light rounded mt-3">
+            <h4>Описание кинофильма</h4>
+            <p>{{ cinema.description }}</p>
+        </div>
+
+        {% if cinema.video or cinema.trailer %}
+        <div class="video_cinema  text-light rounded mt-5">
+
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                {% if cinema.video %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active bg-dark text-light" id="home-tab" data-bs-toggle="tab"
+                            data-bs-target="#home-tab-pane"
+                            type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Смотреть фильм
+                    </button>
+                </li>
+                {% endif %}
+
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link bg-dark text-light" id="profile-tab" data-bs-toggle="tab"
+                            data-bs-target="#profile-tab-pane"
+                            type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Трейлер
+                    </button>
+                </li>
+
+            </ul>
+
+
+            <div class="tab-content" id="myTabContent">
+                {% if cinema.video %}
+                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                     tabindex="0">
+                    <video preload="metadata" controls="controls" width="100%" height="500px" controlsList="nodownload">
+                        <source src="{{ cinema.video.url }}" type="video/mp4">
+                    </video>
+                </div>
+                {% endif %}
+
+                <div class="tab-pane fade {% if not cinema.video %}show active{% endif %}" id="profile-tab-pane"
+                     role="tabpanel" aria-labelledby="profile-tab"
+                     tabindex="0">
+                    <iframe width="100%" height="500px" src="{{ cinema.trailer }}"
+                            title="{{ cinema.title }}" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+                </div>
+
+            </div>
+
+
+        </div>
+        {% endif %}
+
+        <div class="same_cinemas auth_modal p-3 text-light">
+            <h3 class="my-3">Рекомендуем посмотреть</h3>
+
+            <div class="row row-cols-1 row-cols-md-4 g-2">
+                {% for cinema in same_cinemas %}
+                <div class="col">
+                    <div class="bg-dark text-light border-dark">
+                        <a href="{{ cinema.get_absolute_url }}" style="text-decoration:none;">
+                            <img src="{{ cinema.photo.url }}" class="rounded" width="200px" height="250px" alt="...">
+                            <div class="p-3 text-center">
+                                <h6 class="card-title text-light">{{ cinema.title }}</h6>
+                                <p class="card-text text-light">{{ cinema.year }} {{ cinema.country }}</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+
+        </div>
+
+        <div class="comment_block mt-4 text-light">
+            <h3>Комментарии: </h3>
+            {% if request.user.is_authenticated %}
+            <div class="comment_form mt-3">
+                <form action="{% url 'save_comment' cinema.pk %}" method="post">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+
+                    <button class="btn btn-success" type="submit">Отправить</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <div class="comment_list mt-4 text-light">
+
+                {% for comment in comments %}
+                <div class="comment p-2 rounded mb-3" style="border:1px solid white">
+
+                    <div class="d-flex justify-content-between">
+                        <div class="comment_info d-flex">
+                            <img src="{{ comment.author_photo }}"
+                                 alt="" height="60" width="60" class="rounded-circle">
+                            <div class="comment_text mx-3">
+                                <h6>{{ comment.author }} <small class="mx-3">{{ comment.created_at }}</small></h6>
+                                <p style="overflow-wrap: anywhere">{{ comment.text }}</p>
+                            </div>
+                        </div>
+
+                        {% if request.user == comment.author %}
+                        <div class="comment_options d-flex">
+
+                            {% include 'online_cinema/components/_confirm.html' %}
+                            <a href=""  class="text-light mx-2 btn_delete" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalComment-{{ comment.pk }}" >
+                                <i class="bi bi-trash-fill"></i>
+                            </a>
+
+
+                            <a class="text-light mx-2" data-bs-toggle="collapse"
+                               href="#collapseExample-{{ comment.pk }}"
+                               role="button" aria-expanded="false" aria-controls="collapseExample"><i
+                                    class="bi bi-pencil-square"></i></a>
+
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="collapse" id="collapseExample-{{ comment.pk }}">
+                        <div class="">
+                            <form action="{% url 'comment_update' comment.pk %}" method="post">
+                                {% csrf_token %}
+                                <p>
+                                    <textarea name="text" cols="40" rows="10"
+                                              class="form-control bg-dark text-light mt-2" style="height: 60px;"
+                                              required="" id="id_text">{{ comment.text }}</textarea>
+                                </p>
+
+                                <button class="btn btn-primary" type="submit">изменить</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+{% endblock main %}

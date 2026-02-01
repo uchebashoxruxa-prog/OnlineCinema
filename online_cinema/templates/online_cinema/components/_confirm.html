@@ -1,0 +1,23 @@
+<!-- Кнопка-триггер модального окна -->
+
+
+<!-- Модальное окно -->
+<div class="modal fade" id="exampleModalComment-{{ comment.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 text-center" id="exampleModalLabel">Вы действительно хотите удалить комментарий</h1>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'comment_delete' comment.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        Да удалить
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

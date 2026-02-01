@@ -1,0 +1,51 @@
+{% load cinema_tags %}
+{% auth_forms as form %}
+
+<!--Мдальное окно дял авторизации-->
+<div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content auth_modal text-light">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Авторизация</h1>
+        <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        {{ form.login_form.as_p }}
+
+          <button class="btn btn-success w-100" type="submit">Войти</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">Регистрация</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно для регистарции-->
+<div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content auth_modal text-light">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">Регистрация</h1>
+        <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'register' %}" method="post">
+          {% csrf_token %}
+
+          {{ form.register_form.as_p }}
+
+          <button class="btn btn-success w-100" type="submit">Зарегистрироваться</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Войти в аккаунт</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a class="nav-link active" data-bs-toggle="modal" href="#exampleModalToggle" role="button">Вход\Регистрация</a>

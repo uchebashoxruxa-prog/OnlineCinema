@@ -1,0 +1,14 @@
+{% load cinema_tags %}
+
+
+<div class="list-group bg-dark flex-wrap-wrap">
+    <a href="{% url 'main' %}" class="list-group-item bg-dark text-light" aria-current="true">
+        Все кинофильмы
+    </a>
+    {% get_categories as categories %}
+    {% for cat in categories %}
+    <a href="{{ cat.get_absolute_url }}" class="list-group-item bg-dark text-light">{{ cat.title }}</a>
+    {% endfor %}
+</div>
+
+

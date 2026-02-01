@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+
+<div class="col-12 d-flex justify-content-center">
+
+    <div class="col-9">
+
+        <div class="profile_info d-flex auth_modal p-4  text-light">
+
+            <div class="cinema_photo rounded">
+                <img src="{{ profile.get_photo }}" alt="" width="150" height="200" class="rounded">
+                <h4 class="text-center mt-3">{{ profile.user.username }}</h4>
+                <p>
+                    <button class="btn_profile" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        Изменить профиль
+                    </button>
+                </p>
+            </div>
+
+            <div class="info mx-4 text-light">
+                <div class="about d-flex flex-column mt-4">
+                    <p>Имя: {{ profile.user.first_name }}</p>
+                    <p>Фамилия: {{ profile.user.last_name }}</p>
+                    <p>Почта: {{ profile.user.email }}</p>
+                    <p>Дата регистрации: {{ profile.user.date_joined }}</p>
+                    <p>Был онлайн: {{ profile.user.last_login }}</p>
+                    <p>Количество комментариев: {{ profile.count_comment }}</p>
+                    <p>С какого годора: {% if profile.location %} {{ profile.location }} {% endif %}</p>
+                    <p>О себе: {% if profile.about %} {{ profile.about }} {% endif %}</p>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="change_profile   text-light ">
+
+            <div class="collapse" id="collapseExample">
+                <div class="auth_modal p-4">
+                    <form action="{% url 'edit' %}" method="post" class="form_user" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        {{ account_form.as_p }}
+                        {{ profile_form.as_p }}
+
+                        <button class="btn_profile" type="submit">Изменить</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+{% endblock main %}
